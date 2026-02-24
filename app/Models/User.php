@@ -47,9 +47,19 @@ class User extends Authenticatable
 
     public function colocations()
     {
-        return $this->belongsToMany(Colocation::class,'memberships')
-        ->using(Membership::class)
-        ->withPivot('id', 'joined_at', 'internal_role', 'left_at')
-        ->withTimestamps();
+        return $this->belongsToMany(Colocation::class, 'memberships')
+            ->using(Membership::class)
+            ->withPivot('id', 'joined_at', 'internal_role', 'left_at')
+            ->withTimestamps();
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role_id === 1;
+    }
+
+    public function isUser(): bool
+    {
+        return $this->role_id === 2;
     }
 }

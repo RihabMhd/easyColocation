@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('reputation_score');
-            $table->boolean('is_banned');
+            $table->integer('reputation_score')->default(0);
+            $table->boolean('is_banned')->default(false);
+            $table->foreignId('role_id')->constrained()->default(2);
         });
     }
 

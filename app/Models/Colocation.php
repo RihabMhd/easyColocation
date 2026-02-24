@@ -12,9 +12,19 @@ class Colocation extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class,'memberships')
-        ->using(Membership::class)
-        ->withPivot('id', 'joined_at', 'internal_role', 'left_at')
-        ->withTimestamps();
+        return $this->belongsToMany(User::class, 'memberships')
+            ->using(Membership::class)
+            ->withPivot('id', 'joined_at', 'internal_role', 'left_at')
+            ->withTimestamps();
+    }
+
+    public function memberships()
+    {
+        return $this->hasMany(Membership::class);
+    }
+
+    public function owner()
+    {
+        return $this->memberships()->where('internal_role', 'owner')->first();
     }
 }
