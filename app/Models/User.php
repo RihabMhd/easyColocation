@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'reputation_score',
+        'is_banned'
     ];
 
     /**
@@ -42,4 +44,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function colocations()
+    {
+        return $this->belongsToMany(Colocation::class,'memberships')
+        ->using(Membership::class)
+        ->withPivot('id', 'joined_at', 'internal_role', 'left_at')
+        ->withTimestamps();
+    }
 }
