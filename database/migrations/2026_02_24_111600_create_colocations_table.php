@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->enum('status',['cancelled','active']);
+            $table->enum('status',['cancelled','active'])->default('active');
             $table->timestamps();
         });
     }

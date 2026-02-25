@@ -23,8 +23,7 @@ class UpdateColocationRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string|min:20',
-            'status' => 'sometimes|in:cancelled,active'
+            'description' => 'sometimes|string|min:20'
         ];
     }
 }

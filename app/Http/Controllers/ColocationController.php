@@ -17,24 +17,18 @@ class ColocationController extends Controller
         return view('colocations.index', compact('colocations'));
     }
 
-    public function create()
-    {
-        return view('colocations.create');
-    }
-
     public function store(StoreColocationRequest $request)
     {
-        // Block if user already has an active colocation
-        $hasActive = Colocation::whereHas('memberships', function ($query) {
+       
+        Colocation::whereHas('memberships', function ($query) {
             $query->where('user_id', auth()->id());
-        })->where('status', 'active')->exists();
+        })->where('status', 'active')->update(['status' => 'cancelled']);
 
-        if ($hasActive) {
-            return redirect()->route('colocations.index')
-                ->with('error', 'You already have an active colocation.');
-        }
-
-        $colocation = Colocation::create($request->validated());
+    
+        $colocation = Colocation::create(array_merge(
+            $request->validated(),
+            ['status' => 'active']
+        ));
 
         $colocation->memberships()->create([
             'user_id' => auth()->id(),
@@ -43,19 +37,13 @@ class ColocationController extends Controller
         ]);
 
         return redirect()->route('colocations.index')
-            ->with('success', 'Colocation created successfully.');
+            ->with('success', 'New colocation created! Previous history has been archived.');
     }
 
     public function show(string $id)
     {
         $colocation = Colocation::with('memberships.user')->findOrFail($id);
         return view('colocations.show', compact('colocation'));
-    }
-
-    public function edit(string $id)
-    {
-        $colocation = Colocation::findOrFail($id);
-        return view('colocations.edit', compact('colocation'));
     }
 
     public function update(UpdateColocationRequest $request, string $id)
@@ -104,13 +92,13 @@ class ColocationController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-      
+
         if ($membership->internal_role === 'owner') {
             return redirect()->route('colocations.show', $id)
                 ->with('error', 'You must transfer ownership before quitting.');
         }
 
-        
+
         $membership->delete();
         $colocation->update(['status' => 'cancelled']);
 

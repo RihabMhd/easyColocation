@@ -23,8 +23,7 @@ class StoreColocationRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'required|string|min:20',
-            'status' => 'required|in:cancelled,active'
+            'description' => 'required|string|min:20'
         ];
     }
 }
