@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('colocation_id')->constrained()->onDelete('cascade');
             $table->foreignId('debtor_id')->constrained("users")->onDelete('cascade');
             $table->foreignId('creditor_id')->constrained("users")->onDelete('cascade');
+            $table->foreignId('expense_id')->constrained()->onDelete('cascade');
             $table->decimal('amount');
             $table->boolean('is_paid');
             $table->timestamps();

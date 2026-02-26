@@ -46,6 +46,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function role()
+    {
+        return $this->belongsTo(Role::class); 
+    }
+
     public function colocations()
     {
         return $this->belongsToMany(Colocation::class, 'memberships')
@@ -62,5 +67,17 @@ class User extends Authenticatable
     public function isUser(): bool
     {
         return $this->role_id === 2;
+    }
+
+    public function paidExpenses() {
+        return $this->hasMany(Expense::class); 
+    }
+
+    public function debts() {
+        return $this->hasMany(Settlement::class, 'debtor_id'); 
+    }
+
+    public function credits() {
+        return $this->hasMany(Settlement::class, 'creditor_id'); 
     }
 }

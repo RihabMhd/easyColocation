@@ -27,4 +27,17 @@ class Colocation extends Model
     {
         return $this->memberships()->where('internal_role', 'owner')->first();
     }
+
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class);
+    }
+
+    public function expenses() {
+        return $this->hasMany(Expense::class); 
+    }
+
+    public function settlements() {
+        return $this->hasMany(Settlement::class); 
+    }
 }
