@@ -24,7 +24,6 @@ class UpdateExpenseRequest extends FormRequest
         return [
             'title' => 'sometimes|string|max:255',
             'amount' => 'sometimes|numeric|min:0',
-            'user_id' => 'sometimes|exists:users,id',
             'date' => 'sometimes|date',
             'category_name' => 'sometimes|string',
         ];

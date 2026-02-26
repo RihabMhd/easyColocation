@@ -11,15 +11,14 @@ class SettlementController extends Controller
 
     public function update(Request $request, Settlement $settlement)
     {
-        if ($settlement->debtor_id !== Auth::id()) {
-            abort(403, 'You can only mark your own debts as paid.');
+        if ($settlement->debtor_id !== auth()->id() && $settlement->creditor_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $settlement->update([
             'is_paid' => true
         ]);
 
-        return back()->with('success', 'Expense part marked as paid!');
+        return back()->with('success', 'Payment status updated!');
     }
-
 }

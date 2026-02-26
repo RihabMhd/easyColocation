@@ -9,7 +9,7 @@ class Settlement extends Model
 {
     use HasFactory;
     protected $fillable = ['colocation_id', 'debtor_id', 'creditor_id', 'expense_id', 'amount', 'is_paid'];
-
+    
     public function expense()
     {
         return $this->belongsTo(Expense::class);

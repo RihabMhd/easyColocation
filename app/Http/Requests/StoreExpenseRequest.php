@@ -11,7 +11,7 @@ class StoreExpenseRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        return true;
     }
 
     /**
@@ -24,7 +24,6 @@ class StoreExpenseRequest extends FormRequest
         return [
             'title' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
-            'user_id' => 'required|exists:users,id',
             'date' => 'required|date',
             'category_name' => 'required|string',
         ];

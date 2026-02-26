@@ -143,15 +143,18 @@
                                     <button onclick="toggleMemberMenu(event, {{ $membership->id }})"
                                         class="p-2 hover:bg-gray-200 rounded-full transition duration-200 focus:outline-none">
                                         <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                                            <path
+                                                d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                                         </svg>
                                     </button>
 
                                     {{-- Actual Dropdown --}}
                                     <div id="dropdown-{{ $membership->id }}"
                                         class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-[100] overflow-hidden">
-                                        
-                                        <form action="{{ route('colocations.transfer', [$colocation->id, $membership->user_id]) }}" method="POST">
+
+                                        <form
+                                            action="{{ route('colocations.transfer', [$colocation->id, $membership->user_id]) }}"
+                                            method="POST">
                                             @csrf
                                             <button type="submit"
                                                 class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition">
@@ -159,12 +162,15 @@
                                             </button>
                                         </form>
 
-                                        <form action="{{ route('colocations.kick', [$colocation->id, $membership->user_id]) }}" method="POST"
-                                            onsubmit="return confirm('Are you sure you want to remove this member?')">
-                                            @csrf @method('DELETE')
+                                        <form
+                                            action="{{ route('colocations.removeMember', [$colocation->id, $membership->user_id]) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Are you sure? You will inherit all their unpaid debts.');">
+                                            @csrf
+                                            @method('DELETE')
                                             <button type="submit"
-                                                class="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition border-t border-gray-50">
-                                                Kick Member
+                                                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                Kick Out
                                             </button>
                                         </form>
                                     </div>
@@ -187,7 +193,8 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Name</label>
-                        <input type="text" id="editName" name="name" required class="w-full rounded-lg border-gray-300">
+                        <input type="text" id="editName" name="name" required
+                            class="w-full rounded-lg border-gray-300">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Description</label>
@@ -195,8 +202,11 @@
                     </div>
                 </div>
                 <div class="mt-8 flex justify-end gap-3">
-                    <button type="button" onclick="closeModal('editModal')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow">Save Changes</button>
+                    <button type="button" onclick="closeModal('editModal')"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow">Save
+                        Changes</button>
                 </div>
             </form>
         </div>
@@ -225,7 +235,7 @@
             event.stopPropagation();
 
             const menu = document.getElementById(`dropdown-${id}`);
-            
+
             // Close all other menus
             document.querySelectorAll('[id^="dropdown-"]').forEach(m => {
                 if (m !== menu) m.classList.add('hidden');

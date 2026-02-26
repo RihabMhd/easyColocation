@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Expense extends Model
 {
     use HasFactory;
-    protected $fillable = ['colocation_id','user_id','category_id','title','amount','date'];
+    protected $fillable = ['colocation_id', 'user_id', 'category_id', 'title', 'amount', 'date'];
 
     public function payer() {
         return $this->belongsTo(User::class, 'user_id'); 

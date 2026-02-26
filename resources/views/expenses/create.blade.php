@@ -11,6 +11,16 @@
             <span class="font-medium text-gray-950 text-xs uppercase tracking-widest">New Expense</span>
         </nav>
 
+        @if ($errors->any())
+            <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-xl">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
             <h1 class="text-2xl font-extrabold text-gray-950 mb-8">Record an Expense</h1>
 
@@ -36,7 +46,6 @@
                         </div>
                     </div>
 
-                   
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Payer</label>
                         <div class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-gray-600 text-sm">

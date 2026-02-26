@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Colocation;
 use App\Http\Requests\UpdateColocationRequest;
 use App\Http\Requests\StoreColocationRequest;
+use App\Models\Settlement;
+use App\Models\Membership;
+use App\Models\User;
 
 class ColocationController extends Controller
 {
@@ -19,11 +22,22 @@ class ColocationController extends Controller
 
     public function store(StoreColocationRequest $request)
     {
-
-        Colocation::whereHas('memberships', function ($query) {
+        $activeColocation = Colocation::whereHas('memberships', function ($query) {
             $query->where('user_id', auth()->id());
-        })->where('status', 'active')->update(['status' => 'cancelled']);
+        })
+            ->where('status', 'active')
+            ->withCount('memberships')
+            ->first();
 
+        if ($activeColocation && $activeColocation->memberships_count > 0) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Cannot create a new colocation while your current one still has active members.'])
+                ->withInput();
+        }
+
+        if ($activeColocation) {
+            $activeColocation->update(['status' => 'cancelled']);
+        }
 
         $colocation = Colocation::create(array_merge(
             $request->validated(),
@@ -37,7 +51,7 @@ class ColocationController extends Controller
         ]);
 
         return redirect()->route('colocations.index')
-            ->with('success', 'New colocation created! Previous history has been archived.');
+            ->with('success', 'New colocation created! The previous empty session was archived.');
     }
 
     public function show(string $id)
@@ -55,13 +69,13 @@ class ColocationController extends Controller
             ->with('success', 'Colocation updated successfully.');
     }
 
-  
+
 
     public function transferOwnership(string $id, string $userId)
     {
         $colocation = Colocation::findOrFail($id);
 
-        
+
         $currentOwner = $colocation->memberships()
             ->where('user_id', auth()->id())
             ->where('internal_role', 'owner')
@@ -77,23 +91,36 @@ class ColocationController extends Controller
         return redirect()->back()->with('success', 'Ownership transferred successfully.');
     }
 
-    public function kick(string $id, string $userId)
+
+    public function removeMember(Colocation $colocation, User $user)
     {
-        $colocation = Colocation::findOrFail($id);
+        $isOwner = $colocation->memberships()
+            ->where('user_id', auth()->id())
+            ->where('internal_role', 'owner')
+            ->exists();
 
-       
-        if (!$colocation->memberships()->where('user_id', auth()->id())->where('internal_role', 'owner')->exists()) {
-            return redirect()->back()->with('error', 'Only the owner can remove members.');
+        if (!$isOwner) {
+            return back()->with('error', 'Only the owner can remove members.');
         }
 
-        $membership = $colocation->memberships()->where('user_id', $userId)->firstOrFail();
-
-        if ($membership->internal_role === 'owner') {
-            return redirect()->back()->with('error', 'You cannot kick the owner.');
+        if ($user->id === auth()->id()) {
+            return back()->with('error', 'You cannot kick yourself.');
         }
 
-        $membership->delete();
-        return redirect()->back()->with('success', 'Member has been removed.');
+        $unpaidDebts = Settlement::where('colocation_id', $colocation->id)
+            ->where('debtor_id', $user->id)
+            ->where('is_paid', false)
+            ->get();
+
+        foreach ($unpaidDebts as $debt) {
+            $debt->update([
+                'debtor_id' => auth()->id(),
+            ]);
+        }
+
+        $colocation->memberships()->where('user_id', $user->id)->delete();
+
+        return back()->with('success', "Member removed. You have inherited their unpaid debts (" . $unpaidDebts->count() . " settlements).");
     }
 
     public function quit(string $id)
@@ -101,14 +128,14 @@ class ColocationController extends Controller
         $colocation = Colocation::withCount('memberships')->findOrFail($id);
         $membership = $colocation->memberships()->where('user_id', auth()->id())->firstOrFail();
 
-       
+
         if ($membership->internal_role === 'owner' && $colocation->memberships_count > 1) {
             return redirect()->back()->with('error', 'You must transfer ownership before leaving.');
         }
 
         $membership->delete();
 
-        
+
         if ($colocation->memberships_count <= 1) {
             $colocation->update(['status' => 'cancelled']);
         }
@@ -120,7 +147,7 @@ class ColocationController extends Controller
     {
         $colocation = Colocation::withCount('memberships')->findOrFail($id);
 
-   
+
         $isOwner = $colocation->memberships()->where('user_id', auth()->id())->where('internal_role', 'owner')->exists();
 
         if (!$isOwner) {

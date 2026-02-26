@@ -19,29 +19,29 @@
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1 text-indigo-700">Title</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Title</label>
                         <input type="text" name="title" value="{{ $expense->title }}" required 
-                            class="w-full rounded-xl border-gray-300">
+                            class="w-full rounded-xl border-gray-200">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Amount (€)</label>
                             <input type="number" name="amount" step="0.01" value="{{ $expense->amount }}" required 
-                                class="w-full rounded-xl border-gray-300">
+                                class="w-full rounded-xl border-gray-200">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Date</label>
                             <input type="date" name="date" value="{{ \Carbon\Carbon::parse($expense->date)->format('Y-m-d') }}" required 
-                                class="w-full rounded-xl border-gray-300">
+                                class="w-full rounded-xl border-gray-200">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Category</label>
-                        <input list="categories" name="category_name" value="{{ $expense->category->name }}" required 
-                            class="w-full rounded-xl border-gray-300">
-                        <datalist id="categories">
+                        <input list="category-options" name="category_name" value="{{ $expense->category->name }}" required 
+                            class="w-full rounded-xl border-gray-200">
+                        <datalist id="category-options">
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->name }}">
                             @endforeach
