@@ -20,7 +20,7 @@
             </div>
 
             <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:border-red-500 transition-all">
-                <h3 class="text-sm font-bold text-gray-950 uppercase mb-4">Banned Users Trend</h3>
+                <h3 class="text-sm font-bold text-gray-950 uppercase mb-4">Banned Users</h3>
                 <div class="relative h-[250px] w-full">
                     <canvas id="bannedChart"></canvas>
                 </div>
