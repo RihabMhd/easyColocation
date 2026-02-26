@@ -48,7 +48,7 @@
 
                         <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
                             {{-- Everyone can View --}}
-                            <a href="{{ route('colocations.show', $colocation->id) }}"
+                            <a href="{{ route('user.colocations.show', $colocation->id) }}"
                                 class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">View</a>
 
                             {{-- OWNER ONLY LOGIC --}}
@@ -66,7 +66,7 @@
                                     Edit
                                 </button>
 
-                                <a href="{{ route('colocations.show', $colocation->id) }}"
+                                <a href="{{ route('user.colocations.show', $colocation->id) }}"
                                     class="text-sm font-semibold text-emerald-600 hover:text-emerald-500">
                                     Invite
                                 </a>
@@ -88,7 +88,7 @@
 
         {{-- Create Modal --}}
         <div id="createModal" class="hidden w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
-            <form action="{{ route('colocations.store') }}" method="POST" class="p-6">
+            <form action="{{ route('user.colocations.store') }}" method="POST" class="p-6">
                 @csrf
                 <h2 class="text-lg font-bold text-gray-950 mb-6">New Colocation</h2>
                 <div class="space-y-4">

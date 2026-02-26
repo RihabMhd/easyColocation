@@ -3,7 +3,7 @@
 @section('content')
     <div class="max-w-2xl mx-auto space-y-6">
         <nav class="flex items-center gap-2 text-sm text-gray-500">
-            <a href="{{ route('colocations.show', $colocation->id) }}"
+            <a href="{{ route('user.colocations.show', $colocation->id) }}"
                 class="transition hover:text-gray-700">{{ $colocation->name }}</a>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -24,7 +24,7 @@
         <div class="p-8 bg-white border border-gray-200 rounded-2xl shadow-sm">
             <h1 class="text-2xl font-extrabold text-gray-950 mb-8">Record an Expense</h1>
 
-            <form action="{{ route('expenses.store', $colocation->id) }}" method="POST" class="space-y-6">
+            <form action="{{ route('user.expenses.store', $colocation->id) }}" method="POST" class="space-y-6">
                 @csrf
                 <div class="space-y-4">
                     <div>

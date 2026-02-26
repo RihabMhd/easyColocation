@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\User;
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Colocation;
 use Illuminate\Http\Request;
@@ -10,7 +10,6 @@ use App\Http\Requests\CreateCategoryRequest;
 
 class CategoryController extends Controller
 {
-
     public function index(Request $request)
     {
         $colocationId = $request->get('colocation_id');
@@ -24,7 +23,6 @@ class CategoryController extends Controller
         return response()->json($categories);
     }
 
-    
     public function store(CreateCategoryRequest $request)
     {
         $category = Category::create([
@@ -38,12 +36,8 @@ class CategoryController extends Controller
         ], 201);
     }
 
-
-    public function update(UpdateCategoryRequest $request, $id)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $category = Category::findOrFail($id);
-        
-       
         if (is_null($category->colocation_id)) {
             return response()->json(['error' => 'Cannot edit global categories'], 403);
         }
@@ -52,10 +46,8 @@ class CategoryController extends Controller
         return response()->json($category);
     }
 
-    public function destroy($id)
+    public function destroy(Category $category)
     {
-        $category = Category::findOrFail($id);
-
         if (is_null($category->colocation_id)) {
             return response()->json(['error' => 'Cannot delete global categories'], 403);
         }

@@ -24,7 +24,7 @@
 
             <div class="flex items-center gap-6">
                 @auth
-                    <a href="{{ route('colocations.index') }}"
+                    <a href="{{ route('user.colocations.index') }}"
                         class="text-sm font-semibold text-slate-600 hover:text-indigo-600 transition">
                         Go to App
                     </a>
@@ -56,7 +56,7 @@
 
             <div class="flex flex-col sm:flex-row gap-4">
                 @auth
-                    <a href="{{ route('colocations.index') }}"
+                    <a href="{{ route('user.colocations.index') }}"
                         class="inline-flex items-center justify-center bg-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition text-lg">
                         Go to Dashboard →
                     </a>

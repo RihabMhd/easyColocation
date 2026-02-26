@@ -18,7 +18,7 @@
                     <span class="px-3 py-1 text-xs font-bold uppercase rounded-lg bg-gray-100 text-gray-600 border border-gray-200">
                         {{ $colocation->status }}
                     </span>
-                    <a href="{{ route('colocations.show', $colocation->id) }}" class="text-sm font-semibold text-indigo-600">Review</a>
+                    <a href="{{ route('user.colocations.show', $colocation->id) }}" class="text-sm font-semibold text-indigo-600">Review</a>
                 </div>
             </div>
         @empty

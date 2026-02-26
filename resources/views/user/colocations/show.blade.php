@@ -13,7 +13,7 @@
     <div class="max-w-6xl mx-auto space-y-6">
         {{-- Breadcrumbs --}}
         <nav class="flex items-center gap-2 text-sm text-gray-500">
-            <a href="{{ route('colocations.index') }}" class="transition hover:text-gray-700">Colocations</a>
+            <a href="{{ route('user.colocations.index') }}" class="transition hover:text-gray-700">Colocations</a>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -40,7 +40,7 @@
                     <p class="text-sm text-gray-500">Send an invitation link via email</p>
                 </div>
 
-                <form action="{{ route('invitations.send', $colocation->id) }}" method="POST">
+                <form action="{{ route('user.invitations.send', $colocation->id) }}" method="POST">
                     @csrf
                     <div class="flex flex-col sm:flex-row items-end gap-4">
                         <div class="flex-1 w-full">
@@ -79,7 +79,7 @@
                     </button>
 
                     @if ($memberCount === 1)
-                        <form action="{{ route('colocations.destroy', $colocation->id) }}" method="POST"
+                        <form action="{{ route('user.colocations.destroy', $colocation->id) }}" method="POST"
                             onsubmit="return confirm('Archive this colocation?')">
                             @csrf @method('DELETE')
                             <button type="submit"
@@ -90,7 +90,7 @@
                     @endif
                 @endif
 
-                <form action="{{ route('colocations.quit', $colocation->id) }}" method="POST"
+                <form action="{{ route('user.colocations.quit', $colocation->id) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to leave?')">
                     @csrf @method('DELETE')
                     <button type="submit"
@@ -99,7 +99,7 @@
                     </button>
                 </form>
 
-                <a href="{{ route('expenses.index', $colocation->id) }}"
+                <a href="{{ route('user.expenses.index', $colocation->id) }}"
                     class="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 shadow-sm">
                     Manage Expenses
                 </a>
@@ -120,13 +120,25 @@
                                 {{ substr($membership->user->name, 0, 1) }}
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-gray-950">
-                                    {{ $membership->user->name }}
-                                    @if ($membership->user_id === auth()->id())
-                                        <span
-                                            class="ml-1 text-[10px] bg-indigo-600 text-white px-1.5 py-0.5 rounded-full uppercase">You</span>
-                                    @endif
-                                </p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-sm font-bold text-gray-950">
+                                        {{ $membership->user->name }}
+                                        @if ($membership->user_id === auth()->id())
+                                            <span
+                                                class="ml-1 text-[10px] bg-indigo-600 text-white px-1.5 py-0.5 rounded-full uppercase">You</span>
+                                        @endif
+                                    </p>
+
+                                    {{-- reputation badge --}}
+                                    <span title="Reputation Score"
+                                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold {{ $membership->user->reputation_score >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        {{ $membership->user->reputation_score ?? 0 }}
+                                    </span>
+                                </div>
                                 <p class="text-xs text-gray-500">{{ $membership->user->email }}</p>
                             </div>
                         </div>
@@ -137,7 +149,6 @@
                                 {{ ucfirst($membership->internal_role) }}
                             </span>
 
-                            {{-- Menu Wrapper --}}
                             @if ($isOwner && $membership->user_id !== auth()->id())
                                 <div class="relative">
                                     <button onclick="toggleMemberMenu(event, {{ $membership->id }})"
@@ -148,12 +159,12 @@
                                         </svg>
                                     </button>
 
-                                    {{-- Actual Dropdown --}}
                                     <div id="dropdown-{{ $membership->id }}"
                                         class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-[100] overflow-hidden">
 
+                                        {{-- transfer ownership --}}
                                         <form
-                                            action="{{ route('colocations.transfer', [$colocation->id, $membership->user_id]) }}"
+                                            action="{{ route('user.colocations.transfer', [$colocation->id, $membership->user_id]) }}"
                                             method="POST">
                                             @csrf
                                             <button type="submit"
@@ -162,14 +173,15 @@
                                             </button>
                                         </form>
 
+                                        {{-- remove member (kick) --}}
                                         <form
-                                            action="{{ route('colocations.removeMember', [$colocation->id, $membership->user_id]) }}"
+                                            action="{{ route('user.colocations.removeMember', [$colocation->id, $membership->user_id]) }}"
                                             method="POST"
-                                            onsubmit="return confirm('Are you sure? You will inherit all their unpaid debts.');">
+                                            onsubmit="return confirm('Are you sure? Your reputation will decrease if they have unpaid debts.');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                                class="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
                                                 Kick Out
                                             </button>
                                         </form>

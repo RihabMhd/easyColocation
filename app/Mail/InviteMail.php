@@ -39,7 +39,7 @@ class InviteMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.invite',
+            view: 'user.emails.invite',
         );
     }
 
@@ -56,6 +56,6 @@ class InviteMail extends Mailable
     public function build()
     {
         return $this->subject('You are invited to join a colocation!')
-            ->view('emails.invite');
+            ->view('user.emails.invite');
     }
 }

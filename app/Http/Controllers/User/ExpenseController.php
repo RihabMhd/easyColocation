@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
+use App\Http\Controllers\Controller;
 
 use App\Models\Expense;
 use App\Models\Category;
@@ -35,7 +36,7 @@ class ExpenseController extends Controller
             ->get()
             ->unique('name');
 
-        return view('expenses.index', compact('colocation', 'expenses', 'categories'));
+        return view('user.expenses.index', compact('colocation', 'expenses', 'categories'));
     }
 
     public function create(Colocation $colocation)
@@ -46,14 +47,16 @@ class ExpenseController extends Controller
             ->get()
             ->unique('name');
 
-        return view('expenses.create', compact('colocation', 'members', 'categories'));
+        return view('user.expenses.create', compact('colocation', 'members', 'categories'));
     }
-    public function show(Colocation $colocation, Expense $expense)
-{
-    $expense->load('settlements.debtor');
 
-    return view('expenses.show', compact('colocation', 'expense'));
-}
+    public function show(Colocation $colocation, Expense $expense)
+    {
+        // load settlements for detail view
+        $expense->load('settlements.debtor');
+
+        return view('user.expenses.show', compact('colocation', 'expense'));
+    }
 
     public function store(StoreExpenseRequest $request, Colocation $colocation)
     {
@@ -73,11 +76,10 @@ class ExpenseController extends Controller
 
         $this->syncSettlements($expense, $colocation);
 
-        return redirect()->route('expenses.index', $colocation->id)
+        // redirecting using the colocation object
+        return redirect()->route('user.expenses.index', $colocation)
             ->with('success', 'Expense and splits saved!');
     }
-
-
 
     public function edit(Colocation $colocation, Expense $expense)
     {
@@ -86,7 +88,7 @@ class ExpenseController extends Controller
             ->get()
             ->unique('name');
 
-        return view('expenses.edit', compact('colocation', 'expense', 'categories'));
+        return view('user.expenses.edit', compact('colocation', 'expense', 'categories'));
     }
 
     public function update(UpdateExpenseRequest $request, Colocation $colocation, Expense $expense)
@@ -103,17 +105,15 @@ class ExpenseController extends Controller
             'date' => $request->date,
         ]);
 
-
         $this->syncSettlements($expense, $colocation);
 
-        return redirect()->route('expenses.index', $colocation)
+        return redirect()->route('user.expenses.index', $colocation)
             ->with('success', 'Expense updated!');
     }
 
     private function syncSettlements(Expense $expense, Colocation $colocation)
     {
         $expense->settlements()->delete();
-
         $members = $colocation->users;
         $count = $members->count();
 

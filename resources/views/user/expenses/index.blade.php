@@ -4,11 +4,11 @@
     <div class="max-w-6xl mx-auto space-y-6">
 
         <nav class="flex items-center gap-2 text-sm text-gray-500">
-            <a href="{{ route('colocations.index') }}" class="transition hover:text-gray-700">Colocations</a>
+            <a href="{{ route('user.colocations.index') }}" class="transition hover:text-gray-700">Colocations</a>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-            <a href="{{ route('colocations.show', $colocation->id) }}"
+            <a href="{{ route('user.colocations.show', $colocation->id) }}"
                 class="transition hover:text-gray-700">{{ $colocation->name }}</a>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -21,7 +21,7 @@
                 <h1 class="text-3xl font-extrabold tracking-tight text-gray-950">Financial History</h1>
                 <p class="mt-2 text-gray-600">Track all shared costs for this house.</p>
             </div>
-            <a href="{{ route('expenses.create', $colocation->id) }}"
+            <a href="{{ route('user.expenses.create', $colocation->id) }}"
                 class="px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-500 transition shadow-sm">
                 + Add New Expense
             </a>
@@ -70,7 +70,7 @@
         </div>
 
         <div class="bg-white p-4 border border-gray-200 rounded-2xl shadow-sm">
-            <form action="{{ route('expenses.index', $colocation->id) }}" method="GET"
+            <form action="{{ route('user.expenses.index', $colocation->id) }}" method="GET"
                 class="flex flex-wrap items-center gap-4">
 
                 <div class="flex flex-col gap-1 min-w-[150px]">
@@ -100,7 +100,7 @@
                     </button>
 
                     @if (request()->anyFilled(['month', 'category_id']))
-                        <a href="{{ route('expenses.index', $colocation->id) }}"
+                        <a href="{{ route('user.expenses.index', $colocation->id) }}"
                             class="px-5 py-2.5 bg-gray-100 text-gray-600 text-xs font-bold rounded-xl hover:bg-gray-200 transition">
                             Reset
                         </a>
@@ -126,7 +126,7 @@
                         <tr>
                             <td class="px-6 py-4 text-sm">{{ \Carbon\Carbon::parse($expense->date)->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 text-sm font-bold">
-                                <a href="{{ route('expenses.show', [$colocation->id, $expense->id]) }}"
+                                <a href="{{ route('user.expenses.show', [$colocation->id, $expense->id]) }}"
                                     class="text-indigo-600 hover:underline">
                                     {{ $expense->title }}
                                 </a>
@@ -138,7 +138,7 @@
                             <td class="px-6 py-4 text-right">
                                 {{-- Logic: Only the person who created the expense can see the 'Edit' button --}}
                                 @if ($expense->user_id === auth()->id())
-                                    <a href="{{ route('expenses.edit', [$colocation->id, $expense->id]) }}"
+                                    <a href="{{ route('user.expenses.edit', [$colocation->id, $expense->id]) }}"
                                         class="inline-flex items-center px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition">
                                         Edit
                                     </a>

@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
+use App\Http\Controllers\Controller;
 
 use App\Models\Colocation;
 use App\Models\Invitation;
@@ -45,7 +46,7 @@ class InvitationController extends Controller
     public function accept($token)
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();
-        return view('invitations.accept', compact('invitation'));
+        return view('user.invitations.accept', compact('invitation'));
     }
 
     public function process($token)
@@ -63,7 +64,7 @@ class InvitationController extends Controller
      
         $invitation->delete();
 
-        return redirect()->route('colocations.index')
+        return redirect()->route('user.colocations.index')
             ->with('success', 'You have successfully joined the colocation!');
     }
 
@@ -75,7 +76,7 @@ class InvitationController extends Controller
 
         $invitation->delete();
 
-        return redirect()->route('colocations.index')
+        return redirect()->route('user.colocations.index')
             ->with('success', 'Invitation refused and removed.');
     }
 }
