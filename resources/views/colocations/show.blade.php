@@ -99,7 +99,7 @@
                     </button>
                 </form>
 
-                <a href="{{ route('colocations.depense', $colocation->id) }}"
+                <a href="{{ route('expenses.index', $colocation->id) }}"
                     class="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 shadow-sm">
                     Manage Expenses
                 </a>

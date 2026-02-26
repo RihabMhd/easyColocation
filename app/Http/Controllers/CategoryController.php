@@ -3,63 +3,64 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Colocation;
 use Illuminate\Http\Request;
+use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Requests\CreateCategoryRequest;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(Request $request)
     {
-        //
+        $colocationId = $request->get('colocation_id');
+
+        $categories = Category::whereNull('colocation_id')
+            ->when($colocationId, function ($query, $colocationId) {
+                return $query->orWhere('colocation_id', $colocationId);
+            })
+            ->get();
+
+        return response()->json($categories);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    
+    public function store(CreateCategoryRequest $request)
     {
-        //
+        $category = Category::create([
+            'name' => $request->name,
+            'colocation_id' => $request->colocation_id 
+        ]);
+
+        return response()->json([
+            'message' => 'New personalized category added!',
+            'category' => $category
+        ], 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function update(UpdateCategoryRequest $request, $id)
     {
+        $category = Category::findOrFail($id);
         
+       
+        if (is_null($category->colocation_id)) {
+            return response()->json(['error' => 'Cannot edit global categories'], 403);
+        }
+
+        $category->update($request->only('name'));
+        return response()->json($category);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Category $category)
+    public function destroy($id)
     {
-        //
-    }
+        $category = Category::findOrFail($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
-    {
-        //
-    }
+        if (is_null($category->colocation_id)) {
+            return response()->json(['error' => 'Cannot delete global categories'], 403);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Category $category)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Category $category)
-    {
-        //
+        $category->delete();
+        return response()->json(['message' => 'Category deleted']);
     }
 }
