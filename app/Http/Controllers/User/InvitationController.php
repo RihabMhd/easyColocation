@@ -13,14 +13,14 @@ use Illuminate\Support\Facades\Mail;
 
 class InvitationController extends Controller
 {
-
+    // send an invitation email to a new member
     public function send(Request $request, Colocation $colocation)
     {
         $request->validate([
             'email' => 'required|email'
         ]);
 
-
+        // check if the user is already in the colocation
         $alreadyMember = Membership::where('colocation_id', $colocation->id)
             ->whereHas('user', function ($query) use ($request) {
                 $query->where('email', $request->email);
@@ -30,30 +30,32 @@ class InvitationController extends Controller
             return back()->with('error', 'This user is already a member.');
         }
 
-
+        // create the invitation with a random token
         $invitation = Invitation::create([
             'colocation_id' => $colocation->id,
             'email' => $request->email,
             'token' => Str::random(64),
         ]);
 
-
+        // send the invitation email
         Mail::to($request->email)->send(new InviteMail($invitation));
 
         return back()->with('success', "Invitation sent to {$request->email}!");
     }
 
+    // show the page to accept or refuse an invitation
     public function accept($token)
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();
         return view('user.invitations.accept', compact('invitation'));
     }
 
+    // add the current user to the colocation and remove the invitation
     public function process($token)
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();
 
-       
+        // create a membership for the current user
         Membership::create([
             'user_id' => auth()->id(),
             'colocation_id' => $invitation->colocation_id,
@@ -61,17 +63,16 @@ class InvitationController extends Controller
             'joined_at' => now(), 
         ]);
 
-     
+        // delete the invitation after it is used
         $invitation->delete();
 
         return redirect()->route('user.colocations.index')
             ->with('success', 'You have successfully joined the colocation!');
     }
 
-
+    // refuse the invitation and delete it
     public function refuse($token)
     {
-
         $invitation = Invitation::where('token', $token)->firstOrFail();
 
         $invitation->delete();

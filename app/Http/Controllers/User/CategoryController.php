@@ -10,10 +10,12 @@ use App\Http\Requests\CreateCategoryRequest;
 
 class CategoryController extends Controller
 {
+    // get all categories : global and from the colocation
     public function index(Request $request)
     {
         $colocationId = $request->get('colocation_id');
 
+        // find categories with no colocation or with the given colocation
         $categories = Category::whereNull('colocation_id')
             ->when($colocationId, function ($query, $colocationId) {
                 return $query->orWhere('colocation_id', $colocationId);
@@ -23,6 +25,7 @@ class CategoryController extends Controller
         return response()->json($categories);
     }
 
+    // create a new category for a colocation
     public function store(CreateCategoryRequest $request)
     {
         $category = Category::create([
@@ -36,8 +39,10 @@ class CategoryController extends Controller
         ], 201);
     }
 
+    // update a category name but the global categories cannot be changed
     public function update(UpdateCategoryRequest $request, Category $category)
     {
+        // stop it if the category is global
         if (is_null($category->colocation_id)) {
             return response()->json(['error' => 'Cannot edit global categories'], 403);
         }
@@ -46,8 +51,10 @@ class CategoryController extends Controller
         return response()->json($category);
     }
 
+    // delete a category but global categories cannot be deleted
     public function destroy(Category $category)
     {
+        // stop if the category is global
         if (is_null($category->colocation_id)) {
             return response()->json(['error' => 'Cannot delete global categories'], 403);
         }
