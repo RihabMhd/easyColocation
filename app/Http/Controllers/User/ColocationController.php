@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\User;
+
 use App\Http\Controllers\Controller;
 
 use App\Models\Colocation;
@@ -30,9 +31,9 @@ class ColocationController extends Controller
             ->withCount('memberships')
             ->first();
 
-        if ($activeColocation && $activeColocation->memberships_count > 0) {
+        if ($activeColocation && $activeColocation->memberships_count > 1) {
             return redirect()->back()
-                ->withErrors(['error' => 'Cannot create a new colocation while your current one still has active members.'])
+                ->withErrors(['error' => 'Cannot create a new colocation while your current one still has other active members.'])
                 ->withInput();
         }
 
@@ -52,7 +53,7 @@ class ColocationController extends Controller
         ]);
 
         return redirect()->route('user.colocations.index')
-            ->with('success', 'New colocation created! The previous empty session was archived.');
+            ->with('success', 'New colocation created! Your previous solo session was archived.');
     }
 
     public function show(Colocation $colocation)
@@ -128,7 +129,7 @@ class ColocationController extends Controller
             return redirect()->back()->with('error', 'You must transfer ownership before leaving.');
         }
 
-      
+
         $hasDebt = Settlement::where('colocation_id', $colocation->id)
             ->where('debtor_id', auth()->id())
             ->where('is_paid', false)
@@ -153,18 +154,26 @@ class ColocationController extends Controller
     {
         $colocation->loadCount('memberships');
 
-        $isOwner = $colocation->memberships()->where('user_id', auth()->id())->where('internal_role', 'owner')->exists();
+        $isOwner = $colocation->memberships()
+            ->where('user_id', auth()->id())
+            ->where('internal_role', 'owner')
+            ->exists();
 
         if (!$isOwner) {
             return redirect()->back()->with('error', 'Unauthorized.');
         }
 
         if ($colocation->memberships_count > 1) {
-            return redirect()->back()->with('error', 'Cannot cancel a colocation that still has members.');
+            return redirect()->back()->with('error', 'Cannot cancel a colocation that still has other members. Transfer ownership or remove them first.');
         }
 
-        $colocation->update(['status' => 'cancelled']);
-        return redirect()->route('user.colocations.index')->with('success', 'Colocation cancelled.');
+        $updated = $colocation->update(['status' => 'cancelled']);
+
+        if ($updated) {
+            return redirect()->route('user.colocations.index')->with('success', 'Colocation archived successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Failed to update status.');
     }
 
     public function historique()

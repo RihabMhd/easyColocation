@@ -13,7 +13,7 @@
         @endif
         <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-                <h1 class="text-2xl font-bold tracking-tight text-gray-950">My Colocations</h1>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-950">My Colocation</h1>
             </div>
             <button onclick="openModal('createModal')"
                 class="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow hover:bg-indigo-500">
@@ -34,10 +34,12 @@
         @else
             <div class="grid gap-6 md:grid-cols-2">
                 @foreach ($colocations as $colocation)
-                    <div
-                        class="relative bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:border-indigo-500 transition-all">
+                    <div onclick="window.location='{{ route('user.colocations.show', $colocation->id) }}'"
+                        class="group relative bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:border-indigo-500 hover:shadow-md transition-all cursor-pointer">
+
                         <div class="flex items-start justify-between mb-4">
-                            <h3 class="text-lg font-bold text-gray-950">{{ $colocation->name }}</h3>
+                            <h3 class="text-lg font-bold text-gray-950 group-hover:text-indigo-600 transition">
+                                {{ $colocation->name }}</h3>
                             <span
                                 class="px-2 py-1 text-xs font-medium rounded-md bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
                                 {{ ucfirst($colocation->status) }}
@@ -47,17 +49,16 @@
                         <p class="text-sm text-gray-600 line-clamp-2 mb-6">{{ $colocation->description }}</p>
 
                         <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
-                            <a href="{{ route('user.colocations.show', $colocation->id) }}"
-                                class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">View</a>
-                                @can('update', $colocation)
+                            @can('update', $colocation)
                                 <button
-                                    onclick="openEditModal({{ $colocation->id }}, '{{ addslashes($colocation->name) }}', '{{ addslashes($colocation->description) }}')"
-                                    class="text-sm font-semibold text-gray-600 hover:text-gray-900">
-                                    Edit
+                                    onclick="event.stopPropagation(); openEditModal({{ $colocation->id }}, '{{ addslashes($colocation->name) }}', '{{ addslashes($colocation->description) }}')"
+                                    class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition z-10">
+                                    Edit Settings
                                 </button>
 
                                 <a href="{{ route('user.colocations.show', $colocation->id) }}"
-                                    class="text-sm font-semibold text-emerald-600 hover:text-emerald-500">
+                                    onclick="event.stopPropagation();"
+                                    class="text-sm font-semibold text-emerald-600 hover:text-emerald-500 z-10">
                                     Invite
                                 </a>
                             @endcan
