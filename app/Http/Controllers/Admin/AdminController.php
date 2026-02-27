@@ -11,16 +11,17 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    // 1. Statistiques
+    // show the statistics page with charts and numbers
     public function statistiques()
     {
-        // Basic real-time counts
+        
         $stats = [
             'total_users' => User::count(),
             'banned_users' => User::where('is_banned', true)->count(),
             'total_colocations' => Colocation::count(),
         ];
 
+        // group banned users by the month they were created
         $bannedGrowth = \App\Models\User::where('is_banned', true)
             ->get()
             ->groupBy(function ($user) {
@@ -32,21 +33,19 @@ class AdminController extends Controller
             'data' => $bannedGrowth->map->count()->values(),
         ];
 
-        // --- REAL USER GROWTH ---
-        // Get users from the last 6 months, grouped by month name
+        // get users created in the last 6 months and group them by month
         $userGrowth = User::where('created_at', '>=', now()->subMonths(6))
             ->get()
             ->groupBy(function ($user) {
-                return $user->created_at->format('M'); // Groups by 'Jan', 'Feb', etc.
+                return $user->created_at->format('M');
             });
 
         $chartData = [
-            'labels' => $userGrowth->keys(), // The Month names
-            'data' => $userGrowth->map->count()->values(), // The count per month
+            'labels' => $userGrowth->keys(),
+            'data' => $userGrowth->map->count()->values(),
         ];
 
-        // --- REAL EXPENSE ACTIVITY ---
-        // Get real expenses grouped by month to show platform usage
+        // get expenses created in the last 6 months and group them by month
         $expenseActivity = Expense::where('created_at', '>=', now()->subMonths(6))
             ->get()
             ->groupBy(function ($expense) {
@@ -58,8 +57,7 @@ class AdminController extends Controller
             'activity_data' => $expenseActivity->map->count()->values(),
         ];
 
-        // --- REAL COLOCATION STATUS ---
-        // Grouping colocations by their 'status' column (e.g., active, archived)
+        // group colocations by their status : active or cancelled
         $colocationStatus = Colocation::get()->groupBy('status');
 
         $statusChartData = [
@@ -67,26 +65,26 @@ class AdminController extends Controller
             'data' => $colocationStatus->map->count()->values(),
         ];
 
-        return view('admin.statistiques', compact('stats', 'chartData', 'extraChartData', 'statusChartData','bannedChartData'));
+        return view('admin.statistiques', compact('stats', 'chartData', 'extraChartData', 'statusChartData', 'bannedChartData'));
     }
 
-    // 2. Manage Users (List & Ban)
+    // show the list of all users
     public function users()
     {
         $users = User::all();
         return view('admin.users', compact('users'));
     }
 
+    // ban a user by setting is_banned to true
     public function banUser(User $user)
     {
-        $user->update(['is_banned' => true]); // Requires an 'is_banned' column in your migration
+        $user->update(['is_banned' => true]);
         return back()->with('status', 'User banned successfully.');
     }
 
-    // 3. Colocations & Members
+    // show the list of all colocations with their members
     public function colocations()
     {
-        // Fetch colocations with their members (assuming a 'users' relationship exists)
         $colocations = Colocation::with('users')->get();
         return view('admin.colocations', compact('colocations'));
     }
