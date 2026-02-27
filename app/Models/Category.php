@@ -8,15 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
     use HasFactory;
-    protected $fillable = ['name','colocation_id'];
 
+    protected $fillable = ['name', 'colocation_id'];
 
-    public function colocation(){
+    // a category belongs to one colocation
+    public function colocation()
+    {
         return $this->belongsTo(Colocation::class);
     }
 
-    public function expenses(){
+    // a category has many expenses
+    public function expenses()
+    {
         return $this->hasMany(Expense::class);
     }
-    
 }
