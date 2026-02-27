@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\User;
+
 use App\Http\Controllers\Controller;
 
 use App\Models\Expense;
@@ -15,6 +16,22 @@ class ExpenseController extends Controller
 {
     public function index(Request $request, Colocation $colocation)
     {
+        $userId = auth()->id();
+
+        $credits = Settlement::where('creditor_id', $userId)
+            ->where('colocation_id', $colocation->id)
+            ->where('is_paid', false)
+            ->with('debtor') 
+            ->get();
+
+    
+        $debts = Settlement::where('debtor_id', $userId)
+            ->where('colocation_id', $colocation->id)
+            ->where('is_paid', false)
+            ->with('creditor')
+            ->get();
+
+       
         $query = $colocation->expenses()
             ->with(['payer', 'category'])
             ->orderBy('date', 'desc');
@@ -36,7 +53,13 @@ class ExpenseController extends Controller
             ->get()
             ->unique('name');
 
-        return view('user.expenses.index', compact('colocation', 'expenses', 'categories'));
+        return view('user.expenses.index', compact(
+            'colocation',
+            'expenses',
+            'categories',
+            'credits',
+            'debts'
+        ));
     }
 
     public function create(Colocation $colocation)
@@ -52,7 +75,6 @@ class ExpenseController extends Controller
 
     public function show(Colocation $colocation, Expense $expense)
     {
-        // load settlements for detail view
         $expense->load('settlements.debtor');
 
         return view('user.expenses.show', compact('colocation', 'expense'));
@@ -76,13 +98,13 @@ class ExpenseController extends Controller
 
         $this->syncSettlements($expense, $colocation);
 
-        // redirecting using the colocation object
         return redirect()->route('user.expenses.index', $colocation)
             ->with('success', 'Expense and splits saved!');
     }
 
     public function edit(Colocation $colocation, Expense $expense)
     {
+        $this->authorize('update', $expense);
         $categories = Category::whereNull('colocation_id')
             ->orWhere('colocation_id', $colocation->id)
             ->get()
@@ -93,6 +115,7 @@ class ExpenseController extends Controller
 
     public function update(UpdateExpenseRequest $request, Colocation $colocation, Expense $expense)
     {
+        $this->authorize('update', $expense);
         $category = Category::firstOrCreate([
             'name' => $request->category_name,
             'colocation_id' => $colocation->id,

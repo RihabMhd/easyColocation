@@ -4,7 +4,7 @@
         <p class="mb-8 text-gray-600">You are invited to join <strong>{{ $invitation->colocation->name }}</strong>.</p>
         
         <div class="flex flex-col gap-3">
-            {{-- Accept Button --}}
+            
             <form action="{{ route('user.invitations.process', $invitation->token) }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full py-3 px-4 font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-500 transition shadow-sm">
@@ -12,13 +12,13 @@
                 </button>
             </form>
 
-            {{-- Refuse Button --}}
             <form action="{{ route('user.invitations.refuse', $invitation->token) }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full py-3 px-4 font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition">
                     Refuse Invitation
                 </button>
             </form>
+
         </div>
     </div>
 </x-guest-layout>

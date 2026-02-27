@@ -22,7 +22,7 @@
                     $inactive = 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-transparent';
                 @endphp
 
-                {{-- ADMIN MENU (Role 1) --}}
+                {{-- the menu of the admin --}}
                 @if (Auth::user()->role_id == 1)
                     <p class="px-6 text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Administration
                     </p>
@@ -55,7 +55,7 @@
                     </a>
                 @endif
 
-                {{-- USER MENU (Role 2) --}}
+                {{-- the menu of the user --}}
                 @if (Auth::user()->role_id == 2)
                     <p class="px-6 text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Main Menu</p>
 
@@ -89,8 +89,8 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"
-                        class="w-full text-left px-2 py-2 text-xs font-medium text-red-600 hover:text-red-700">Log
-                        Out</button>
+                        class="w-full text-left px-2 py-2 text-xs font-medium text-red-600 hover:text-red-700">
+                        Log Out</button>
                 </form>
             </div>
         </div>

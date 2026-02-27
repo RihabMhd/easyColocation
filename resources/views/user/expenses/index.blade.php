@@ -31,12 +31,6 @@
             <div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
                 <h3 class="text-xs font-bold text-green-600 uppercase tracking-widest mb-4">Owed to You</h3>
                 <div class="space-y-3">
-                    @php
-                        $credits = \App\Models\Settlement::where('creditor_id', auth()->id())
-                            ->where('colocation_id', $colocation->id)
-                            ->where('is_paid', false)
-                            ->get();
-                    @endphp
                     @forelse($credits as $credit)
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">{{ $credit->debtor->name }} owes you</span>
@@ -51,12 +45,6 @@
             <div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
                 <h3 class="text-xs font-bold text-red-600 uppercase tracking-widest mb-4">Your Debts</h3>
                 <div class="space-y-3">
-                    @php
-                        $debts = \App\Models\Settlement::where('debtor_id', auth()->id())
-                            ->where('colocation_id', $colocation->id)
-                            ->where('is_paid', false)
-                            ->get();
-                    @endphp
                     @forelse($debts as $debt)
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">You owe {{ $debt->creditor->name }}</span>
@@ -136,15 +124,14 @@
                             <td class="px-6 py-4 text-sm font-bold text-gray-950">{{ number_format($expense->amount, 2) }}
                                 €</td>
                             <td class="px-6 py-4 text-right">
-                                {{-- Logic: Only the person who created the expense can see the 'Edit' button --}}
-                                @if ($expense->user_id === auth()->id())
+                               @can('update', $expense)
                                     <a href="{{ route('user.expenses.edit', [$colocation->id, $expense->id]) }}"
                                         class="inline-flex items-center px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition">
                                         Edit
                                     </a>
                                 @else
                                     <span class="text-gray-300 text-xs italic">View Only</span>
-                                @endif
+                                @endcan
                             </td>
                         </tr>
                     @endforeach

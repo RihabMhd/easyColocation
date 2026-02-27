@@ -15,7 +15,6 @@
                         class="font-bold text-gray-900">{{ number_format($expense->amount, 2) }} €</span></p>
             </div>
 
-            {{-- Roommate Splits Section --}}
             <div class="p-8">
                 <h2 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6">Roommate Splits</h2>
 
@@ -31,7 +30,7 @@
                                     <div class="flex items-center gap-2">
                                         <p class="text-sm font-bold text-gray-900">{{ $settlement->debtor->name }}</p>
 
-                                        {{-- reputation badge --}}
+
                                         <span title="Reputation Score"
                                             class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold {{ $settlement->debtor->reputation_score >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                             <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
@@ -50,21 +49,20 @@
                                     <span
                                         class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Paid</span>
                                 @else
-                                    {{-- Only show button to the person who is owed money (the creditor) --}}
-                                    @if ($expense->user_id === auth()->id())
-                                        <form action="{{ route('user.settlements.update', $settlement->id) }}"
-                                            method="POST">
+                                    @can('settle', $expense)
+                                        <form action="{{ route('user.settlements.update', $settlement->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit"
                                                 class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-500 transition shadow-sm">
                                                 Mark as Paid
                                             </button>
+                                            </button>
                                         </form>
                                     @else
                                         <span
                                             class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">Pending</span>
-                                    @endif
+                                    @endcan
                                 @endif
                             </div>
                         </div>

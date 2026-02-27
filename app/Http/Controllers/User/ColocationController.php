@@ -63,6 +63,7 @@ class ColocationController extends Controller
 
     public function update(UpdateColocationRequest $request, Colocation $colocation)
     {
+        $this->authorize('update', $colocation);
         $colocation->update($request->validated());
 
         return redirect()->route('user.colocations.index')

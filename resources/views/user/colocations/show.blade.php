@@ -11,7 +11,7 @@
     @endphp
 
     <div class="max-w-6xl mx-auto space-y-6">
-        {{-- Breadcrumbs --}}
+
         <nav class="flex items-center gap-2 text-sm text-gray-500">
             <a href="{{ route('user.colocations.index') }}" class="transition hover:text-gray-700">Colocations</a>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@
             <span class="font-medium text-gray-950">{{ $colocation->name }}</span>
         </nav>
 
-        {{-- Notifications --}}
+   
         @if (session('success'))
             <div class="p-4 text-sm text-green-700 bg-green-50 rounded-xl border border-green-200">
                 {{ session('success') }}
@@ -32,7 +32,7 @@
             </div>
         @endif
 
-        {{-- OWNER ONLY: Invite Section --}}
+      
         @if ($isOwner)
             <div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm space-y-4">
                 <div>
@@ -57,7 +57,7 @@
             </div>
         @endif
 
-        {{-- Header Section --}}
+       
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
                 <div class="flex items-center gap-3">
@@ -106,7 +106,6 @@
             </div>
         </div>
 
-        {{-- Members List --}}
         <div class="bg-white border border-gray-200 rounded-2xl shadow-sm">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
                 <h3 class="text-sm font-bold text-gray-950 uppercase tracking-widest">Members ({{ $memberCount }})</h3>
@@ -129,7 +128,7 @@
                                         @endif
                                     </p>
 
-                                    {{-- reputation badge --}}
+                                   
                                     <span title="Reputation Score"
                                         class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold {{ $membership->user->reputation_score >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -162,7 +161,7 @@
                                     <div id="dropdown-{{ $membership->id }}"
                                         class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-[100] overflow-hidden">
 
-                                        {{-- transfer ownership --}}
+                                      
                                         <form
                                             action="{{ route('user.colocations.transfer', [$colocation->id, $membership->user_id]) }}"
                                             method="POST">
@@ -173,11 +172,11 @@
                                             </button>
                                         </form>
 
-                                        {{-- remove member (kick) --}}
+
                                         <form
                                             action="{{ route('user.colocations.removeMember', [$colocation->id, $membership->user_id]) }}"
                                             method="POST"
-                                            onsubmit="return confirm('Are you sure? Your reputation will decrease if they have unpaid debts.');">
+                                            onsubmit="return confirm('Are you sure? Your reputation will decrease if they have unpaid debts');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"

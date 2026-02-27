@@ -35,7 +35,7 @@
             maintainAspectRatio: false
         };
 
-        // User Chart
+        // this chart show the users that registred
         new Chart(document.getElementById('userChart'), {
             type: 'line',
             data: {
@@ -52,7 +52,7 @@
             options: chartOptions
         });
 
-        // Activity Chart
+        // this chart show the users expenses 
         new Chart(document.getElementById('activityChart'), {
             type: 'bar',
             data: {
@@ -67,7 +67,7 @@
             options: chartOptions
         });
 
-        // Status Distribution (Pie Chart)
+        // this chart show the colocation health 
         new Chart(document.getElementById('statusDistributionChart'), {
             type: 'pie',
             data: {
@@ -80,6 +80,7 @@
             options: chartOptions
         });
 
+        // this chart show the users banned or unbanned
         new Chart(document.getElementById('bannedChart'), {
             type: 'line',
             data: {
@@ -87,7 +88,7 @@
                 datasets: [{
                     label: 'Banned Accounts',
                     data: @json($bannedChartData['data']),
-                    borderColor: '#ef4444', // Red-500
+                    borderColor: '#ef4444', 
                     backgroundColor: 'rgba(239, 68, 68, 0.1)',
                     fill: true,
                     tension: 0.4,

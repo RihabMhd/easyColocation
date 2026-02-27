@@ -19,7 +19,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/users/{user}/ban', [AdminController::class, 'banUser'])->name('users.ban');
     Route::get('/colocations', [AdminController::class, 'colocations'])->name('colocations');
 });
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth','checkUser'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

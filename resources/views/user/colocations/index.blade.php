@@ -47,19 +47,9 @@
                         <p class="text-sm text-gray-600 line-clamp-2 mb-6">{{ $colocation->description }}</p>
 
                         <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
-                            {{-- Everyone can View --}}
                             <a href="{{ route('user.colocations.show', $colocation->id) }}"
                                 class="text-sm font-semibold text-indigo-600 hover:text-indigo-500">View</a>
-
-                            {{-- OWNER ONLY LOGIC --}}
-                            @php
-                                $isOwner = $colocation->memberships
-                                    ->where('user_id', auth()->id())
-                                    ->where('internal_role', 'owner')
-                                    ->isNotEmpty();
-                            @endphp
-
-                            @if ($isOwner)
+                                @can('update', $colocation)
                                 <button
                                     onclick="openEditModal({{ $colocation->id }}, '{{ addslashes($colocation->name) }}', '{{ addslashes($colocation->description) }}')"
                                     class="text-sm font-semibold text-gray-600 hover:text-gray-900">
@@ -70,7 +60,7 @@
                                     class="text-sm font-semibold text-emerald-600 hover:text-emerald-500">
                                     Invite
                                 </a>
-                            @endif
+                            @endcan
 
                             <div class="ml-auto text-xs text-gray-400">
                                 👥 {{ $colocation->memberships->count() }} members
@@ -82,11 +72,11 @@
         @endif
     </div>
 
-    {{-- MODALS SECTION --}}
+    {{-- modals --}}
     <div id="modalBackdrop"
         class="fixed inset-0 z-[60] hidden bg-gray-950/60 backdrop-blur-sm flex items-center justify-center p-4">
 
-        {{-- Create Modal --}}
+        {{-- create --}}
         <div id="createModal" class="hidden w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
             <form action="{{ route('user.colocations.store') }}" method="POST" class="p-6">
                 @csrf
@@ -113,7 +103,7 @@
             </form>
         </div>
 
-        {{-- Edit Modal --}}
+        {{-- edit --}}
         <div id="editModal" class="hidden w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
             <form id="editForm" method="POST" class="p-6">
                 @csrf

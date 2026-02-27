@@ -23,9 +23,9 @@ class Colocation extends Model
         return $this->hasMany(Membership::class);
     }
 
-    public function owner()
+    public function isOwner($userId)
     {
-        return $this->memberships()->where('internal_role', 'owner')->first();
+        return $this->memberships()->where('user_id', $userId)->where('internal_role', 'owner')->exists();
     }
 
     public function categories()

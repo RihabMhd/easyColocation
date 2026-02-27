@@ -32,7 +32,6 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-right">
-                                {{-- Only show the button if the user being looped is NOT the authenticated admin --}}
                                 @if ($user->id !== auth()->id())
                                     <form action="{{ route('admin.users.ban', $user->id) }}" method="POST">
                                         @csrf
