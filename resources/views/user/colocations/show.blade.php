@@ -1,15 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    @php
-        $isOwner = $colocation
-            ->memberships()
-            ->where('user_id', auth()->id())
-            ->where('internal_role', 'owner')
-            ->exists();
-        $memberCount = $colocation->memberships->count();
-    @endphp
-
     <div class="max-w-6xl mx-auto space-y-6">
 
         <nav class="flex items-center gap-2 text-sm text-gray-500">
@@ -20,7 +11,6 @@
             <span class="font-medium text-gray-950">{{ $colocation->name }}</span>
         </nav>
 
-   
         @if (session('success'))
             <div class="p-4 text-sm text-green-700 bg-green-50 rounded-xl border border-green-200">
                 {{ session('success') }}
@@ -32,8 +22,7 @@
             </div>
         @endif
 
-      
-        @if ($isOwner)
+        @can('update', $colocation)
             <div class="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm space-y-4">
                 <div>
                     <h3 class="text-lg font-bold text-gray-950">Invite Roommate</h3>
@@ -55,9 +44,8 @@
                     </div>
                 </form>
             </div>
-        @endif
+        @endcan
 
-       
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
                 <div class="flex items-center gap-3">
@@ -71,7 +59,7 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
-                @if ($isOwner)
+                @can('update', $colocation)
                     <button
                         onclick="openEditModal({{ $colocation->id }}, '{{ addslashes($colocation->name) }}', '{{ addslashes($colocation->description) }}')"
                         class="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm">
@@ -88,7 +76,7 @@
                             </button>
                         </form>
                     @endif
-                @endif
+                @endcan
 
                 <form action="{{ route('user.colocations.quit', $colocation->id) }}" method="POST"
                     onsubmit="return confirm('Are you sure you want to leave?')">
@@ -106,6 +94,7 @@
             </div>
         </div>
 
+        {{-- 3. MEMBERS LIST --}}
         <div class="bg-white border border-gray-200 rounded-2xl shadow-sm">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
                 <h3 class="text-sm font-bold text-gray-950 uppercase tracking-widest">Members ({{ $memberCount }})</h3>
@@ -128,7 +117,6 @@
                                         @endif
                                     </p>
 
-                                   
                                     <span title="Reputation Score"
                                         class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold {{ $membership->user->reputation_score >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -148,45 +136,44 @@
                                 {{ ucfirst($membership->internal_role) }}
                             </span>
 
-                            @if ($isOwner && $membership->user_id !== auth()->id())
-                                <div class="relative">
-                                    <button onclick="toggleMemberMenu(event, {{ $membership->id }})"
-                                        class="p-2 hover:bg-gray-200 rounded-full transition duration-200 focus:outline-none">
-                                        <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
-                                            <path
-                                                d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                                        </svg>
-                                    </button>
+                            @can('update', $colocation)
+                                @if ($membership->user_id !== auth()->id())
+                                    <div class="relative">
+                                        <button onclick="toggleMemberMenu(event, {{ $membership->id }})"
+                                            class="p-2 hover:bg-gray-200 rounded-full transition duration-200 focus:outline-none">
+                                            <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                                <path
+                                                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                                            </svg>
+                                        </button>
 
-                                    <div id="dropdown-{{ $membership->id }}"
-                                        class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-[100] overflow-hidden">
+                                        <div id="dropdown-{{ $membership->id }}"
+                                            class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-xl z-[100] overflow-hidden">
 
-                                      
-                                        <form
-                                            action="{{ route('user.colocations.transfer', [$colocation->id, $membership->user_id]) }}"
-                                            method="POST">
-                                            @csrf
-                                            <button type="submit"
-                                                class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition">
-                                                Make Owner
-                                            </button>
-                                        </form>
+                                            <form
+                                                action="{{ route('user.colocations.transfer', [$colocation->id, $membership->user_id]) }}"
+                                                method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition">
+                                                    Make Owner
+                                                </button>
+                                            </form>
 
-
-                                        <form
-                                            action="{{ route('user.colocations.removeMember', [$colocation->id, $membership->user_id]) }}"
-                                            method="POST"
-                                            onsubmit="return confirm('Are you sure? Your reputation will decrease if they have unpaid debts');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
-                                                Kick Out
-                                            </button>
-                                        </form>
+                                            <form
+                                                action="{{ route('user.colocations.removeMember', [$colocation->id, $membership->user_id]) }}"
+                                                method="POST"
+                                                onsubmit="return confirm('Are you sure? Your reputation will decrease if they have unpaid debts');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"
+                                                    class="block w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
+                                                    Kick Out
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
-                                </div>
-                            @endif
+                                @endif
+                            @endcan
                         </div>
                     </li>
                 @endforeach
@@ -194,7 +181,7 @@
         </div>
     </div>
 
-    {{-- Edit Modal --}}
+    {{-- edit modal --}}
     <div id="modalBackdrop"
         class="fixed inset-0 z-[60] hidden bg-gray-950/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div id="editModal" class="hidden w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
@@ -224,16 +211,19 @@
     </div>
 
     <script>
+        // open a modal by id
         function openModal(id) {
             document.getElementById('modalBackdrop').classList.remove('hidden');
             document.getElementById(id).classList.remove('hidden');
         }
 
+        // close a modal by id
         function closeModal(id) {
             document.getElementById('modalBackdrop').classList.add('hidden');
             document.getElementById(id).classList.add('hidden');
         }
 
+        // fill the edit form with the colocation data and open it
         function openEditModal(id, name, description) {
             document.getElementById('editForm').action = `/colocations/${id}`;
             document.getElementById('editName').value = name;
@@ -241,22 +231,22 @@
             openModal('editModal');
         }
 
+        // toggle the dropdown menu for a member row
         function toggleMemberMenu(event, id) {
             event.preventDefault();
             event.stopPropagation();
 
             const menu = document.getElementById(`dropdown-${id}`);
 
-            // Close all other menus
+            // close all other open menus before opening this one
             document.querySelectorAll('[id^="dropdown-"]').forEach(m => {
                 if (m !== menu) m.classList.add('hidden');
             });
 
-            // Toggle current menu
             menu.classList.toggle('hidden');
         }
 
-        // Close when clicking outside
+        // close all menus when the user clicks outside
         document.addEventListener('click', function() {
             document.querySelectorAll('[id^="dropdown-"]').forEach(menu => {
                 menu.classList.add('hidden');

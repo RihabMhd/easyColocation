@@ -8,6 +8,7 @@
     </div>
 
     <div class="space-y-4">
+        {{-- show the list or an empty message if there are no colocations --}}
         @forelse($colocations as $colocation)
             <div class="flex items-center justify-between p-6 bg-white border border-gray-200 rounded-2xl opacity-75 hover:opacity-100 transition shadow-sm">
                 <div>

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\User;
+
 use App\Http\Controllers\Controller;
 
 use App\Models\Colocation;
@@ -54,13 +55,25 @@ class InvitationController extends Controller
     public function process($token)
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();
+        $userId = auth()->id();
+
+        // does the user already have an active colocation?
+        $hasActiveColocation = Membership::where('user_id', $userId)
+            ->whereHas('colocation', function ($query) {
+                $query->where('status', 'active');
+            })->exists();
+
+        if ($hasActiveColocation) {
+            return redirect()->route('user.colocations.index')
+                ->with('error', 'You are already a member of an active colocation. You must leave your current one before joining a new one.');
+        }
 
         // create a membership for the current user
         Membership::create([
-            'user_id' => auth()->id(),
+            'user_id' => $userId,
             'colocation_id' => $invitation->colocation_id,
             'internal_role' => 'member',
-            'joined_at' => now(), 
+            'joined_at' => now(),
         ]);
 
         // delete the invitation after it is used

@@ -14,7 +14,7 @@ class AdminController extends Controller
     // show the statistics page with charts and numbers
     public function statistiques()
     {
-        
+
         $stats = [
             'total_users' => User::count(),
             'banned_users' => User::where('is_banned', true)->count(),
@@ -78,8 +78,14 @@ class AdminController extends Controller
     // ban a user by setting is_banned to true
     public function banUser(User $user)
     {
-        $user->update(['is_banned' => true]);
-        return back()->with('status', 'User banned successfully.');
+        // toggle from ban to unban or the reversed thing
+        $user->update([
+            'is_banned' => ! $user->is_banned
+        ]);
+
+        $status = $user->is_banned ? 'User banned successfully.' : 'User unbanned successfully.';
+
+        return back()->with('status', $status);
     }
 
     // show the list of all colocations with their members

@@ -23,6 +23,7 @@
                                 <div class="text-sm text-gray-500">{{ $user->email }}</div>
                             </td>
                             <td class="px-6 py-4">
+                                {{-- show a red badge if the user is banned, green if active --}}
                                 @if ($user->is_banned)
                                     <span
                                         class="px-2 py-1 text-xs font-medium rounded-md bg-red-50 text-red-700 ring-1 ring-red-600/20">Banned</span>
@@ -32,6 +33,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-right">
+                                {{-- hide the ban button for the current admin to prevent self-ban --}}
                                 @if ($user->id !== auth()->id())
                                     <form action="{{ route('admin.users.ban', $user->id) }}" method="POST">
                                         @csrf

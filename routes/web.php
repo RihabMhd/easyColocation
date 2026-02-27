@@ -14,19 +14,23 @@ Route::get('/', function () {
 
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // admin pages
     Route::get('/statistiques', [AdminController::class, 'statistiques'])->name('statistiques');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
     Route::post('/users/{user}/ban', [AdminController::class, 'banUser'])->name('users.ban');
     Route::get('/colocations', [AdminController::class, 'colocations'])->name('colocations');
 });
+
+
 Route::middleware(['auth','checkUser'])->group(function () {
 
+    // profile pages
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::name('user.')->group(function () {
-
+        // colocation pages
         Route::get('/colocations', [ColocationController::class, 'index'])->name('colocations.index');
         Route::post('/colocations', [ColocationController::class, 'store'])->name('colocations.store');
         Route::get('/colocations/historique', [ColocationController::class, 'historique'])->name('colocations.historique');
@@ -34,16 +38,15 @@ Route::middleware(['auth','checkUser'])->group(function () {
         Route::get('/colocations/{colocation}', [ColocationController::class, 'show'])->name('colocations.show');
         Route::put('/colocations/{colocation}', [ColocationController::class, 'update'])->name('colocations.update');
         Route::delete('/colocations/{colocation}', [ColocationController::class, 'destroy'])->name('colocations.destroy');
-
         Route::post('/colocations/{colocation}/transfer/{user}', [ColocationController::class, 'transferOwnership'])->name('colocations.transfer');
         Route::delete('/colocations/{colocation}/members/{user}', [ColocationController::class, 'removeMember'])->name('colocations.removeMember');
         Route::post('/colocations/{colocation}/quit', [ColocationController::class, 'quit'])->name('colocations.quit');
-
         Route::post('/colocations/{colocation}/invite', [InvitationController::class, 'send'])->name('invitations.send');
+        // invitation pages
         Route::get('/invites/accept/{token}', [InvitationController::class, 'accept'])->name('invitations.accept');
         Route::post('/invites/refuse/{token}', [InvitationController::class, 'refuse'])->name('invitations.refuse');
         Route::post('/invites/process/{token}', [InvitationController::class, 'process'])->name('invitations.process');
-
+        // colocation pages that are in the relation with expenses
         Route::get('/colocations/{colocation}/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
         Route::get('/colocations/{colocation}/expenses/create', [ExpenseController::class, 'create'])->name('expenses.create');
         Route::post('/colocations/{colocation}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');

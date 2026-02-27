@@ -30,12 +30,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // shared options used by all charts
         const chartOptions = {
             responsive: true,
             maintainAspectRatio: false
         };
 
-        // this chart show the users that registred
+        // line chart : number of new users per month
         new Chart(document.getElementById('userChart'), {
             type: 'line',
             data: {
@@ -52,7 +53,7 @@
             options: chartOptions
         });
 
-        // this chart show the users expenses 
+        // bar chart : number of expenses added per month
         new Chart(document.getElementById('activityChart'), {
             type: 'bar',
             data: {
@@ -67,7 +68,7 @@
             options: chartOptions
         });
 
-        // this chart show the colocation health 
+        // pie chart : proportion of active vs cancelled colocations
         new Chart(document.getElementById('statusDistributionChart'), {
             type: 'pie',
             data: {
@@ -80,7 +81,7 @@
             options: chartOptions
         });
 
-        // this chart show the users banned or unbanned
+        // line chart : number of banned users per month 
         new Chart(document.getElementById('bannedChart'), {
             type: 'line',
             data: {

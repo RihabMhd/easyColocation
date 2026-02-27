@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="space-y-6">
+        {{-- show validation errors if any --}}
         @if ($errors->any())
             <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-xl">
                 <ul>
@@ -11,6 +12,7 @@
                 </ul>
             </div>
         @endif
+        
         <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight text-gray-950">My Colocation</h1>
@@ -21,6 +23,7 @@
             </button>
         </header>
 
+        {{-- show an empty state if the user has no colocations otherwise show the list --}}
         @if ($colocations->isEmpty())
             <div
                 class="flex flex-col items-center justify-center p-12 bg-white border border-gray-200 border-dashed rounded-xl text-center">
@@ -49,6 +52,7 @@
                         <p class="text-sm text-gray-600 line-clamp-2 mb-6">{{ $colocation->description }}</p>
 
                         <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
+                            {{-- only show edit and invite buttons to the owner --}}
                             @can('update', $colocation)
                                 <button
                                     onclick="event.stopPropagation(); openEditModal({{ $colocation->id }}, '{{ addslashes($colocation->name) }}', '{{ addslashes($colocation->description) }}')"
@@ -77,7 +81,7 @@
     <div id="modalBackdrop"
         class="fixed inset-0 z-[60] hidden bg-gray-950/60 backdrop-blur-sm flex items-center justify-center p-4">
 
-        {{-- create --}}
+        {{-- create modal --}}
         <div id="createModal" class="hidden w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
             <form action="{{ route('user.colocations.store') }}" method="POST" class="p-6">
                 @csrf
@@ -104,7 +108,7 @@
             </form>
         </div>
 
-        {{-- edit --}}
+        {{-- edit modal --}}
         <div id="editModal" class="hidden w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
             <form id="editForm" method="POST" class="p-6">
                 @csrf
@@ -134,16 +138,19 @@
     </div>
 
     <script>
+        // open a modal by id
         function openModal(id) {
             document.getElementById('modalBackdrop').classList.remove('hidden');
             document.getElementById(id).classList.remove('hidden');
         }
 
+        // close a modal by id
         function closeModal(id) {
             document.getElementById('modalBackdrop').classList.add('hidden');
             document.getElementById(id).classList.add('hidden');
         }
 
+        // fill the edit form with the colocation data and open it
         function openEditModal(id, name, description) {
             document.getElementById('editForm').action = `/colocations/${id}`;
             document.getElementById('editName').value = name;
