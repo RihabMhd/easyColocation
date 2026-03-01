@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        {{-- 3. MEMBERS LIST --}}
+        {{-- liste --}}
         <div class="bg-white border border-gray-200 rounded-2xl shadow-sm">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
                 <h3 class="text-sm font-bold text-gray-950 uppercase tracking-widest">Members ({{ $memberCount }})</h3>

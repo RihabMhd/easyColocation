@@ -57,7 +57,7 @@ class InvitationController extends Controller
         $invitation = Invitation::where('token', $token)->firstOrFail();
         $userId = auth()->id();
 
-        // does the user already have an active colocation?
+        // does the user already have an active colocation 
         $hasActiveColocation = Membership::where('user_id', $userId)
             ->whereHas('colocation', function ($query) {
                 $query->where('status', 'active');
